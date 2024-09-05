@@ -122,8 +122,13 @@ def main():
         kernel_version_info = extract_match(r'"([^"]+)"', f.read())
     
     shutil.copyfile('out/arch/arm64/boot/Image', 'AnyKernel3/Image')
+<<<<<<< HEAD
     zip_filename = 'SN_{}_{}_{}_{}.zip'.format(
         kernel_version, args.target, 'OneUI' if args.oneui else 'AOSP', datetime.today().strftime('%Y-%m-%d'))
+=======
+    zipname = 'universal9611_{}_{}_{}.zip'.format(
+        args.target, variantStr, datetime.today().strftime('%Y-%m-%d'))
+>>>>>>> 369a729b76ac (Defconfifg: added configs)
     os.chdir('AnyKernel3/')
     create_zip(zip_filename, [
         'Image', 
