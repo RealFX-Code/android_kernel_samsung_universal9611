@@ -134,3 +134,4 @@ scripts/fmp/__pycache__/
 out/
 toolchain
 toolchain/
+SN_*.zip
