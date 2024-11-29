@@ -128,7 +128,7 @@ def main():
         shutil.rmtree(output_dir)
     
     make_common = ['make', 'O=out', 'LLVM=1', f'-j{os.cpu_count()}'] + common_flags
-    make_defconfig = make_common + [f'exynos9611-{args.target}_defconfig']
+    make_defconfig = make_common + [f'exynos9611-{args.target}_defconfig', 'nethunter_defconfig']
     
     if args.oneui:
         make_defconfig += ['oneui.config']
