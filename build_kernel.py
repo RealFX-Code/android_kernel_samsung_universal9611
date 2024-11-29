@@ -128,14 +128,17 @@ def main():
         shutil.rmtree(output_dir)
     
     make_common = ['make', 'O=out', 'LLVM=1', f'-j{os.cpu_count()}'] + common_flags
-    make_defconfig = make_common + [f'exynos9611-{args.target}_defconfig', 'nethunter_defconfig']
-    
+    make_defconfig = make_common + [f'exynos9611-{args.target}_defconfig']
+#    make_nethunter = make_common + ["nethunter_defconfig"]
+
     if args.oneui:
         make_defconfig += ['oneui.config']
     
     start_time = datetime.now()
     print('Running make defconfig...')
     run_command(make_defconfig)
+#    print("Running defconfig for NetHunter...")
+#    run_command(make_nethunter)
     print('Building the kernel...')
     run_command(make_common)
     print('Build complete')
