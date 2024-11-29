@@ -10,11 +10,24 @@ class CommandError(Exception):
     pass
 
 def run_command(command):
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
-    if process.returncode != 0:
-        raise CommandError(f"Command failed: {command}. Exit code: {process.returncode}")
-    return stdout.decode("utf-8"), stderr.decode("utf-8")
+    print('Execute command: "%s"...' % ' '.join(command), end=' ')
+    s = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = s.communicate()
+    def write_logs(out, err):
+        out = out.decode("utf-8")
+        err = err.decode("utf-8")
+        stdout_log = str(s.pid) + "_stdout.log"
+        stderr_log = str(s.pid) + "_stderr.log"
+        with open(stdout_log, "w") as f:
+            f.write(out)
+        with open(stderr_log, "w") as f:
+            f.write(err)
+        print(f"Output log files: {stdout_log}, {stderr_log}")
+        
+    if s.returncode != 0:
+        print('failed')
+        write_logs(out, err)
+        raise RuntimeError(f"Command failed: {command}. Exitcode: {s.returncode}")
 
 def file_exists(filepath):
     if not os.path.exists(filepath):
@@ -41,20 +54,30 @@ def create_zip(zip_filename, files):
             zf.write(file)
     print("Zip creation complete")
 
+def match_and_get(regex: str, pattern: str):
+    matched = re.search(regex, pattern)
+    if not matched:
+        raise AssertionError('Failed to match: for pattern: %s regex: %s' % pattern, regex)
+    return matched.group(1)
+
+
 class ClangCompiler:
     @staticmethod
     def verify_executable():
         try:
             run_command(['./toolchain/bin/clang', '-v'])
-        except CommandError:
-            print("Clang execution failed")
-            raise
+        except RuntimeError as e:
+            print("Failed to execute clang, something went wrong")
+            raise e
     
     @staticmethod
     def get_version():
-        version_regex = r"(.*?clang version \d+(\.\d+)*)"
-        _, stderr_output = run_command(['./toolchain/bin/clang', '-v'])
-        return extract_match(version_regex, stderr_output)
+        clangversionRegex = r"(.*?clang version \d+(\.\d+)*).*"
+        s = subprocess.Popen(['./toolchain/bin/clang', '-v'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        _, tcversion = s.communicate()
+        tcversion = tcversion.decode('utf-8')
+        return match_and_get(clangversionRegex, tcversion)
+    
 
 def main():
     parser = argparse.ArgumentParser(description="Build Kernel with specified arguments")
