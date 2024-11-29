@@ -10,7 +10,7 @@ class CommandError(Exception):
     pass
 
 def run_command(command):
-    print('Execute command: "%s"...' % ' '.join(command), end=' ')
+    print('Execute command: "%s"...' % ' '.join(command))
     s = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = s.communicate()
     def write_logs(out, err):
