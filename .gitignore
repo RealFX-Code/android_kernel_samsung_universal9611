@@ -137,3 +137,6 @@ toolchain/
 SN_*.zip
 kali-nethunter-kernel-builder
 kali-nethunter-kernel-builder/
+
+*_stderr.log
+*_stdout.log
